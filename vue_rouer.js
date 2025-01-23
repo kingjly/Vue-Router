@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Vue Router 信息面板
 // @namespace    http://tampermonkey.net/
-// @version      1.9
+// @version      1.10
 // @description  检测网页的 Vue 版本和路由信息，提供可拖动、可缩放的路由面板（性能优化版）
 // @match        *://*/*
 // @grant        none
@@ -243,37 +243,43 @@
             }
         }
 
-        function stopDrag(e) {
-            if (!isDragging) return;
+        function stopDrag(e) {  
+            if (!isDragging) return;  
 
-            isDragging = false;
-            panel.classList.remove('dragging');
+            isDragging = false;  
+            panel.classList.remove('dragging');  
 
-            if (rafId) {
-                cancelAnimationFrame(rafId);
-                rafId = null;
-            }
+            if (rafId) {  
+                cancelAnimationFrame(rafId);  
+                rafId = null;  
+            }  
 
-            // 应用最终位置
-            const dx = e.clientX - startX;
-            const dy = e.clientY - startY;
-            const newX = initialX + dx;
-            const newY = initialY + dy;
+            // 应用最终位置  
+            const dx = e.clientX - startX;  
+            const dy = e.clientY - startY;  
+            const newX = initialX + dx;  
+            const newY = initialY + dy;  
 
-            // 限制面板在可视区域内
-            const panelRect = panel.getBoundingClientRect();
-            const windowWidth = window.innerWidth;
-            const windowHeight = window.innerHeight;
+            // 限制面板在可视区域内  
+            const panelRect = panel.getBoundingClientRect();  
+            const windowWidth = window.innerWidth;  
+            const windowHeight = window.innerHeight;  
 
-            if (newX < 0) newX = 0;
-            if (newY < 0) newY = 0;
-            if (newX + panelRect.width > windowWidth) newX = windowWidth - panelRect.width;
-            if (newY + panelRect.height > windowHeight) newY = windowHeight - panelRect.height;
+            let adjustedX = newX;  
+            let adjustedY = newY;  
 
-            panel.style.left = `${newX}px`;
-            panel.style.top = `${newY}px`;
-            panel.style.transform = 'none';
-            panel.style.cursor = 'move';
+            // 检查水平边界  
+            if (adjustedX < 0) adjustedX = 0;  
+            if (adjustedX + panelRect.width > windowWidth) adjustedX = windowWidth - panelRect.width;  
+
+            // 检查垂直边界  
+            if (adjustedY < 0) adjustedY = 0;  
+            if (adjustedY + panelRect.height > windowHeight) adjustedY = windowHeight - panelRect.height;  
+
+            panel.style.left = `${adjustedX}px`;  
+            panel.style.top = `${adjustedY}px`;  
+            panel.style.transform = 'none';  
+            panel.style.cursor = 'move';  
         }
 
         panel.addEventListener('mousedown', startDrag);
